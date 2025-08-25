@@ -1,15 +1,19 @@
-import SystemDomination from "./components/game/SystemDomination";
-import TeamNameEditor from "./components/game/TeamNameEditor";
+// src/App.jsx
+import SystemDomination from "./components/game/SystemDomination.jsx";
+import TeamNameEditor from "./components/game/TeamNameEditor.jsx";
 
-function App() {
+export default function App() {
   return (
-    <div>
+    <div className="min-h-screen">
       <SystemDomination />
-      <TeamNameEditor
-        team={{ id: 1, name: "Team A", color: "red" }}
-        onChange={(name) => console.log(name)}
-      />
+
+      {/* Demo of TeamNameEditor — remove if not needed */}
+      <div className="p-4">
+        <TeamNameEditor
+          team={{ id: "team-demo", name: "Team A", color: "#ef4444" }}
+          onChange={(name) => console.log("New team name:", name)}
+        />
+      </div>
     </div>
   );
 }
-export default App;

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import Modal from "../Modal";                 // adjust if needed
 import ChallengeCard from "../ChallengeCard"; // adjust if needed
-import { SYSTEMS } from "../data/systems";    // adjust if needed
+import { SYSTEMS } from "../../data/systems";    // adjust if needed
 import TeamNameEditor from "./TeamNameEditor"; // (unused here yet)
 
 // ---------- helpers ----------

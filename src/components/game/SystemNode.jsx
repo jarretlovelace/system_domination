@@ -1,3 +1,5 @@
+import React from "react";
+
 function SystemNode({ idx, system, ownerTeam, teamsHere, onClick }) {
 return (
 <button
