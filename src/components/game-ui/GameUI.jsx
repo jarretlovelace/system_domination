@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Sparkles, Users, Dice5, Star, Target, Crown, Swords, Rocket } from "lucide-react";
+import { Sparkles, Users, Dice5, Star, Target, Crown, Rocket } from "lucide-react";
 
 /** Tailwind game-like UI primitives for your board game */
 
@@ -27,15 +27,15 @@ export function Pane({ children, className = "" }) {
 }
 
 export function Badge({ icon, label, tone = "zinc" }) {
-  const toneClasses = {
-    rose: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-    cyan: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-    emerald: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-    amber: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-    zinc: "bg-white/10 text-zinc-200 border-white/20",
-  }[tone] || "bg-white/10 text-zinc-200 border-white/20";
+  const toneClasses =
+    {
+      rose: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+      cyan: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+      emerald: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+      amber: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+      zinc: "bg-white/10 text-zinc-200 border-white/20",
+    }[tone] || "bg-white/10 text-zinc-200 border-white/20";
 
-  // If an element was passed (e.g., <Sparkles />), add sizing classes.
   const renderedIcon = icon
     ? React.cloneElement(icon, {
         className: ["h-4 w-4", icon.props?.className].filter(Boolean).join(" "),
@@ -63,17 +63,32 @@ export function Token({ label, tone = "rose" }) {
   );
 }
 
-export function Stat({ icon: label, value, tone = "rose" }) {
+export function Stat({ icon, label, value, tone = "rose" }) {
   const toneMap = {
     rose: "text-rose-400",
     cyan: "text-cyan-400",
     emerald: "text-emerald-400",
     amber: "text-amber-400",
   };
+
+  // Accept either icon={<Timer />} OR icon={Timer}
+  let IconEl = null;
+  if (icon) {
+    if (typeof icon === "function") {
+      const Cmp = icon; // passed a component
+      IconEl = <Cmp className={["h-5 w-5", toneMap[tone]].join(" ")} />;
+    } else {
+      // passed an element
+      IconEl = React.cloneElement(icon, {
+        className: ["h-5 w-5", toneMap[tone], icon.props?.className].filter(Boolean).join(" "),
+      });
+    }
+  }
+
   return (
     <div className="flex items-center gap-3">
-      <div className={cn("rounded-xl border border-white/10 p-2", theme.panel)}>
-        <Icon className={cn("h-5 w-5", toneMap[tone])} />
+      <div className="rounded-xl border border-white/10 p-2 bg-[#151633]/80 backdrop-blur">
+        {IconEl}
       </div>
       <div>
         <div className="text-sm text-zinc-400">{label}</div>
@@ -82,6 +97,32 @@ export function Stat({ icon: label, value, tone = "rose" }) {
     </div>
   );
 }
+
+  // Accept either icon={Timer} or icon={<Timer />}
+  let IconEl = null;
+  if (icon) {
+    if (typeof icon === "function") {
+      const Cmp = icon;
+      IconEl = <Cmp className={["h-5 w-5", toneMap[tone]].join(" ")} />;
+    } else {
+      IconEl = React.cloneElement(icon, {
+        className: ["h-5 w-5", toneMap[tone], icon.props?.className].filter(Boolean).join(" "),
+      });
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className={cn("rounded-xl border border-white/10 p-2", theme.panel)}>
+        {IconEl}
+      </div>
+      <div>
+        <div className="text-sm text-zinc-400">{label}</div>
+        <div className="text-xl font-extrabold text-white">{value}</div>
+      </div>
+    </div>
+  );
+
 
 export function ProgressTrack({ steps = 10, value = 3 }) {
   return (
@@ -201,7 +242,8 @@ export function GameHeader({ title, subtitle }) {
       <h1 className="mt-3 text-2xl md:text-4xl font-black text-white drop-shadow">{title}</h1>
       <p className="mt-2 max-w-2xl text-sm md:text-base text-zinc-300">{subtitle}</p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Badge icon={<Swords />} label="Head‑to‑Head" tone="rose" />
+        {/* Replaced the possibly-missing <Swords /> with <Sparkles /> */}
+        <Badge icon={<Sparkles />} label="Head-to-Head" tone="rose" />
         <Badge icon={<Target />} label="Quest Cards" tone="amber" />
         <Badge icon={<Users />} label="Team Play" tone="cyan" />
       </div>
@@ -261,7 +303,7 @@ export function GameSurface({ children }) {
               <stop offset="100%" stopColor="#06b6d4" />
             </linearGradient>
           </defs>
-          <path fill="url(#g1)" d="M37.4,-53.6C50.5,-47.9,64.5,-41.5,70.2,-30.7C75.8,-19.9,73.1,-4.8,68.1,8.2C63.2,21.2,56,32.1,46.6,42.8C37.1,53.6,25.4,64.2,11.6,69.2C-2.2,74.3,-18.1,73.9,-33.5,69.1C-49,64.2,-64,55,-71.2,41.5C-78.4,27.9,-77.8,10,-71.1,-4.4C-64.3,-18.8,-51.3,-29.5,-39.1,-35.6C-26.9,-41.8,-15.4,-43.4,-3.5,-39.2C8.4,-34.9,16.7,-24.1,37.4,-53.6Z" transform="translate(100 100)" />
+        <path fill="url(#g1)" d="M37.4,-53.6C50.5,-47.9,64.5,-41.5,70.2,-30.7C75.8,-19.9,73.1,-4.8,68.1,8.2C63.2,21.2,56,32.1,46.6,42.8C37.1,53.6,25.4,64.2,11.6,69.2C-2.2,74.3,-18.1,73.9,-33.5,69.1C-49,64.2,-64,55,-71.2,41.5C-78.4,27.9,-77.8,10,-71.1,-4.4C-64.3,-18.8,-51.3,-29.5,-39.1,-35.6C-26.9,-41.8,-15.4,-43.4,-3.5,-39.2C8.4,-34.9,16.7,-24.1,37.4,-53.6Z" transform="translate(100 100)" />
         </svg>
       </div>
       {children}

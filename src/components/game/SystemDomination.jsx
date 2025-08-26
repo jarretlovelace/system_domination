@@ -232,7 +232,11 @@ export default function SystemDomination() {
     setChallengeFor(null);
     nextTurn();
   }
-
+console.log("UI imports", {
+  CaliforniaSlicedBoard,
+  GameSurface, GameHeader, Pane, TurnBanner, Stat, ScoreTile,
+  ProgressTrack, Badge, DiceButton, Countdown, Toast
+});
   /* ---------------- RENDER ---------------- */
   return (
     <GameSurface>
@@ -277,21 +281,21 @@ export default function SystemDomination() {
         {/* Middle: Map board + Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* California Map Board */}
-          <Pane className="lg:col-span-2">
-            <h3 className="mb-3 text-sm font-semibold text-zinc-300">Board — California Regions</h3>
-            <CaliforniaSlicedBoard
-              sections={SECTIONS}
-              owners={displayOwners}
-              onSectionClick={(sec) => {
-                if (phase !== "playing") return;
-                const defenderId = ownersBySection[sec.id] || null;
-                setChallengeFor({ sectionId: sec.id, defenderId });
-              }}
-            />
-            <div className="mt-3 text-xs text-zinc-400">
-              Tip: Roll to move. You can also click a region to manually trigger a challenge.
-            </div>
-          </Pane>
+         {CaliforniaSlicedBoard ? (
+  <CaliforniaSlicedBoard
+    sections={SECTIONS}
+    owners={displayOwners}
+    onSectionClick={(sec) => {
+      if (phase !== "playing") return;
+      const defenderId = ownersBySection[sec.id] || null;
+      setChallengeFor({ sectionId: sec.id, defenderId });
+    }}
+  />
+) : (
+  <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-rose-300">
+    CaliforniaSlicedBoard failed to load (check default export & import path).
+  </div>
+)}
 
           {/* Actions / Controls */}
           <Pane className="space-y-4">
