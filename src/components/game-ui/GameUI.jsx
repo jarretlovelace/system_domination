@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Sparkles, Users, Dice5, Star, Target, Crown, Rocket } from "lucide-react";
+import { Sparkles, Users, Star, Target, Crown, Rocket } from "lucide-react";
 
 /** Tailwind game-like UI primitives for your board game */
 
@@ -98,32 +98,6 @@ export function Stat({ icon, label, value, tone = "rose" }) {
   );
 }
 
-  // Accept either icon={Timer} or icon={<Timer />}
-  let IconEl = null;
-  if (icon) {
-    if (typeof icon === "function") {
-      const Cmp = icon;
-      IconEl = <Cmp className={["h-5 w-5", toneMap[tone]].join(" ")} />;
-    } else {
-      IconEl = React.cloneElement(icon, {
-        className: ["h-5 w-5", toneMap[tone], icon.props?.className].filter(Boolean).join(" "),
-      });
-    }
-  }
-
-  return (
-    <div className="flex items-center gap-3">
-      <div className={cn("rounded-xl border border-white/10 p-2", theme.panel)}>
-        {IconEl}
-      </div>
-      <div>
-        <div className="text-sm text-zinc-400">{label}</div>
-        <div className="text-xl font-extrabold text-white">{value}</div>
-      </div>
-    </div>
-  );
-
-
 export function ProgressTrack({ steps = 10, value = 3 }) {
   return (
     <div className="grid grid-cols-10 gap-1">
@@ -145,7 +119,8 @@ export function DiceButton({ onRoll, disabled }) {
         "shadow-xl backdrop-blur ring-2 ring-white/10"
       )}
     >
-      <Dice5 className="h-5 w-5" />
+      {/* use Sparkles here instead of Dice5 to avoid undefined icon issues */}
+      <Sparkles className="h-5 w-5" />
       Roll Dice
       <Sparkles className="h-4 w-4 opacity-70 group-hover:rotate-12 transition" />
     </button>
@@ -242,7 +217,6 @@ export function GameHeader({ title, subtitle }) {
       <h1 className="mt-3 text-2xl md:text-4xl font-black text-white drop-shadow">{title}</h1>
       <p className="mt-2 max-w-2xl text-sm md:text-base text-zinc-300">{subtitle}</p>
       <div className="mt-6 flex flex-wrap gap-3">
-        {/* Replaced the possibly-missing <Swords /> with <Sparkles /> */}
         <Badge icon={<Sparkles />} label="Head-to-Head" tone="rose" />
         <Badge icon={<Target />} label="Quest Cards" tone="amber" />
         <Badge icon={<Users />} label="Team Play" tone="cyan" />
@@ -303,7 +277,7 @@ export function GameSurface({ children }) {
               <stop offset="100%" stopColor="#06b6d4" />
             </linearGradient>
           </defs>
-        <path fill="url(#g1)" d="M37.4,-53.6C50.5,-47.9,64.5,-41.5,70.2,-30.7C75.8,-19.9,73.1,-4.8,68.1,8.2C63.2,21.2,56,32.1,46.6,42.8C37.1,53.6,25.4,64.2,11.6,69.2C-2.2,74.3,-18.1,73.9,-33.5,69.1C-49,64.2,-64,55,-71.2,41.5C-78.4,27.9,-77.8,10,-71.1,-4.4C-64.3,-18.8,-51.3,-29.5,-39.1,-35.6C-26.9,-41.8,-15.4,-43.4,-3.5,-39.2C8.4,-34.9,16.7,-24.1,37.4,-53.6Z" transform="translate(100 100)" />
+          <path fill="url(#g1)" d="M37.4,-53.6C50.5,-47.9,64.5,-41.5,70.2,-30.7C75.8,-19.9,73.1,-4.8,68.1,8.2C63.2,21.2,56,32.1,46.6,42.8C37.1,53.6,25.4,64.2,11.6,69.2C-2.2,74.3,-18.1,73.9,-33.5,69.1C-49,64.2,-64,55,-71.2,41.5C-78.4,27.9,-77.8,10,-71.1,-4.4C-64.3,-18.8,-51.3,-29.5,-39.1,-35.6C-26.9,-41.8,-15.4,-43.4,-3.5,-39.2C8.4,-34.9,16.7,-24.1,37.4,-53.6Z" transform="translate(100 100)" />
         </svg>
       </div>
       {children}

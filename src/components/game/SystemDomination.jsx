@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Modal from "../Modal.jsx";
 import ChallengeCard from "../ChallengeCard.jsx";
-
-import CaliforniaSlicedBoard from "../game-ui/CaliforniaSlicedBoard.jsx";
+import CaliforniaHexBoard from "../game-ui/CaliforniaHexBoard.jsx";
 
 import {
   GameSurface, GameHeader, Pane, TurnBanner, Stat, ScoreTile,
@@ -43,7 +42,7 @@ const defaultTeams = (count = 4) =>
       color: base.color,     // hex used to color owned regions
       tone: base.tone,       // UI accent for ScoreTile
       position: 0,           // index (0..SECTIONS.length-1)
-      owned: {},             // { sectionId: true }
+      owned: {},             // { sectionId OR spaceId: true }
       points: 0,
       streak: 0,
       skip: 0,
@@ -74,14 +73,14 @@ export default function SystemDomination() {
   const [toast, setToast] = useState("");
   const [timerKey, setTimerKey] = useState(0);
 
-  // { sectionId -> teamId }
+  // { sectionId -> teamId } (used by the 12-step ring logic)
   const ownersBySection = useMemo(() => {
     const m = {};
     teams.forEach((t) => Object.keys(t.owned).forEach((sid) => (m[sid] = t.id)));
     return m;
   }, [teams]);
 
-  // { sectionId -> '#hex' } for board coloring
+  // { id -> '#hex' } map for board coloring
   const displayOwners = useMemo(() => {
     const map = {};
     Object.entries(ownersBySection).forEach(([sid, teamId]) => {
@@ -117,7 +116,7 @@ export default function SystemDomination() {
     setRolled(null);
   }
 
-  /* ---------------- DICE / MOVEMENT ---------------- */
+  /* ---------------- DICE / MOVEMENT (12-section ring) ---------------- */
   function rollDie() {
     if (phase !== "playing" || rolled !== null) return;
 
@@ -232,11 +231,7 @@ export default function SystemDomination() {
     setChallengeFor(null);
     nextTurn();
   }
-console.log("UI imports", {
-  CaliforniaSlicedBoard,
-  GameSurface, GameHeader, Pane, TurnBanner, Stat, ScoreTile,
-  ProgressTrack, Badge, DiceButton, Countdown, Toast
-});
+
   /* ---------------- RENDER ---------------- */
   return (
     <GameSurface>
@@ -252,9 +247,9 @@ console.log("UI imports", {
 
           <Pane>
             <div className="grid grid-cols-3 gap-5">
-              <Stat icon={Timer} label="Round Timer" value="60s" tone="cyan" />
-              <Stat icon={Users} label="Teams" value={teams.length} tone="emerald" />
-              <Stat icon={Trophy} label="Goal" value={`${SECTIONS.length} systems`} tone="amber" />
+              <Stat icon={<Timer />} label="Round Timer" value="60s" tone="cyan" />
+              <Stat icon={<Users />} label="Teams" value={teams.length} tone="emerald" />
+              <Stat icon={<Trophy />} label="Goal" value={`${SECTIONS.length} systems`} tone="amber" />
             </div>
           </Pane>
 
@@ -280,22 +275,25 @@ console.log("UI imports", {
 
         {/* Middle: Map board + Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* California Map Board */}
-         {CaliforniaSlicedBoard ? (
-  <CaliforniaSlicedBoard
-    sections={SECTIONS}
-    owners={displayOwners}
-    onSectionClick={(sec) => {
-      if (phase !== "playing") return;
-      const defenderId = ownersBySection[sec.id] || null;
-      setChallengeFor({ sectionId: sec.id, defenderId });
-    }}
-  />
-) : (
-  <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-rose-300">
-    CaliforniaSlicedBoard failed to load (check default export & import path).
-  </div>
-)}
+          {/* California Map Board (hex spaces) */}
+          <Pane className="lg:col-span-2">
+            <h3 className="mb-3 text-sm font-semibold text-zinc-300">Board — California (Hex Spaces)</h3>
+
+            <CaliforniaHexBoard
+              sections={SECTIONS}
+              owners={displayOwners}          // colors owned by section/space id
+              hexRadius={18}                  // tweak size if you want more/less density
+              onSpaceClick={(space) => {
+                // Demo: just show a toast when a space is clicked
+                setToast(`Space selected: ${space.id}`);
+                setTimeout(() => setToast(""), 900);
+              }}
+            />
+
+            <div className="mt-3 text-xs text-zinc-400">
+              Tip: Each hex is a playable space. Click to trigger a challenge or wire it to your movement result.
+            </div>
+          </Pane>
 
           {/* Actions / Controls */}
           <Pane className="space-y-4">
@@ -417,8 +415,8 @@ console.log("UI imports", {
             <p className="text-sm text-zinc-300">conquered all regions!</p>
             <div className="mt-4">
               <button
-              onClick={resetGame}
-              className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/15"
+                onClick={resetGame}
+                className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/15"
               >
                 Play Again
               </button>
